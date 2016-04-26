@@ -110,7 +110,16 @@ object List {
 	def reverse[A](as: List[A]): List[A] = {
 		foldLeft(as, List[A]())((t, h) => Cons(h, t)) 
 	}
+        
+        //Exercise 3.14 
+       def append[A](as: List[A], bs:List[A]): List[A] = {
+            foldRight(as, bs)((x, y) => Cons(x,y)) 
+       }
 
+       // def append[A](as: List[A], bs: List[A]): List[A] = as match {
+        //    case Nil => bs
+         //   case Cons(x, xs) => Cons(x,append(xs, bs))
+        // }
 
 	def apply[A](as: A*): List[A] = 
 		if (as.isEmpty) Nil
