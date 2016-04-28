@@ -110,7 +110,12 @@ object List {
 	def reverse[A](as: List[A]): List[A] = {
 		foldLeft(as, List[A]())((t, h) => Cons(h, t)) 
 	}
-        
+
+	//Exercise 3.13
+	def foldRight2[A,B](as: List[A], z: B)(f: (A, B) => B): B = {
+		foldLeft(reverse(as), z)((x,y) => f(y,x))
+	}
+
         //Exercise 3.14 
        def append[A](as: List[A], bs:List[A]): List[A] = {
             foldRight(as, bs)((x, y) => Cons(x,y)) 
@@ -120,6 +125,49 @@ object List {
         //    case Nil => bs
          //   case Cons(x, xs) => Cons(x,append(xs, bs))
         // }
+
+
+	// Exercise 3.16
+	def addOne(as: List[Int]): List[Int] = {
+		foldRight(as, List[Int]())((a,b) => Cons(a + 1, b))
+	}
+
+	// Exercise 3.17
+	def listToString(as: List[Double]): List[String] = {
+		foldRight(as, List[String]())((a,b) => Cons(a.toString, b))
+	}
+
+	// Exercise 3.18
+	def map[A,B](as: List[A])(f: A => B): List[B] = as match{
+		case Nil => List[B]()
+		case Cons(x, xs) => Cons(f(x), map(xs)(f))
+		
+	}
+
+	// Exercise 3.19
+	def filter[A](as: List[A])(f: A => Boolean): List[A] = {
+		foldRight(as, List[A]())((a, b) => dropWhile(Cons(a, b), f))
+	
+	}
+
+	// Exercise 3.20
+	def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] = as match { 
+		case Nil => List[B]()
+		case Cons(x, xs) => append(f(x), flatMap(xs)(f))
+		
+	}
+
+	// Exercise 3.21
+	def filter2[A](as: List[A])(f: A => Boolean): List[A] = {
+		flatMap(as)(a => dropWhile(Cons(a, Nil),f))
+	}
+
+	// Exercise 3.22
+	def addElements(as: List[Int], bs: List[Int]): List[Int] = {
+		
+		
+	// Exercise 3.23 Generalize the function you just wrote so that it's not specific to integers or addition.  Name your generalized function zipWith
+
 
 	def apply[A](as: A*): List[A] = 
 		if (as.isEmpty) Nil
