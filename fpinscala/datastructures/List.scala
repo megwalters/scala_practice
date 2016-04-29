@@ -121,6 +121,10 @@ object List {
             foldRight(as, bs)((x, y) => Cons(x,y)) 
        }
 
+        //Exercise 3.15 (Had to look up answer to this one :( )
+        def concat[A](as: List[List[A]]): List[A] = 
+            foldRight(as, Nil: List[A])(append)
+
        // def append[A](as: List[A], bs: List[A]): List[A] = as match {
         //    case Nil => bs
          //   case Cons(x, xs) => Cons(x,append(xs, bs))
