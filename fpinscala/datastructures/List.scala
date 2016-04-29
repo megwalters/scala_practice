@@ -163,11 +163,23 @@ object List {
 	}
 
 	// Exercise 3.22
-	def addElements(as: List[Int], bs: List[Int]): List[Int] = {
-		
+	def addElements(as: List[Int], bs: List[Int]): List[Int] = (as, bs) match{
+            case (Cons(x, Nil), Cons(y, Nil)) => Cons(x + y, Nil)
+            case (Nil, Nil) => Nil
+            case (Cons(x, xs), Cons(y, ys)) => Cons(x + y, addElements(xs, ys))
+            case (Cons(x, _), Nil) => Nil
+            case (Nil, Cons(x, _)) => Nil
+        
+        }		
 		
 	// Exercise 3.23 Generalize the function you just wrote so that it's not specific to integers or addition.  Name your generalized function zipWith
-
+        def zipWith[A](as: List[A], bs: List[A])(f: (A, A) => A): List[A] = (as, bs) match {
+            case (Cons(x, Nil), Cons(y, Nil)) => Cons(f(x, y), Nil)
+            case (Nil, Nil) => Nil
+            case (Cons(x, xs), Cons(y, ys)) => Cons(f(x, y), zipWith(xs, ys)(f))
+            case (Cons(x, _), Nil) => Nil
+            case (Nil, Cons(x, _)) => Nil
+        }
 
 	def apply[A](as: A*): List[A] = 
 		if (as.isEmpty) Nil
