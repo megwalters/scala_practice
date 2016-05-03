@@ -29,4 +29,14 @@ object Tree {
         case Leaf(x) => Leaf(f(x))
         case Branch(l, r) => Branch(map(l, f), map(r, f))
     } 
+
+    // Exercise 3.29
+    def fold[A,B](t: Tree[A])(f:A => B)(g: (B, B) => B): B = t match {
+        case Leaf(x) => f(x)
+        case Branch(l, r) => g(fold(l)(f)(g), fold(r)(f)(g))
+    }
+
+    def size2[A](t: Tree[A]): Int = {
+        fold(t)(x => 1)((x, y) => 1 + x + y)
+    }
 } 
