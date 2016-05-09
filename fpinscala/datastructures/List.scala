@@ -185,6 +185,10 @@ object List {
             case (Nil, Cons(x, _)) => Nil
         }
 
+	//Exercise 3.24 TODO
+	//def hasSubsequence[A](sub: List[A], sub: List[A]): Boolean
+	//Implement hasSubsequence for checking whether a List contains another List as a subsequence
+
 	def apply[A](as: A*): List[A] = 
 		if (as.isEmpty) Nil
 		else Cons(as.head, apply(as.tail: _*))
