@@ -4,31 +4,39 @@ sealed trait Tree[+A]
 case class Leaf[A](value: A) extends Tree[A]
 case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
 
-object Tree{
-	//Exercise 3.25
-	// Write a function size that counts the number of nodes (leaves and branches) in a tree	
-	def size[A](t: Tree[A]): Int = t match{
-		case Leaf(_) => 1
-		case Branch(l, r) => 1 + size(l) + size(r)
-	}
+object Tree {
+    // Exercise 3.25
+    def size[A](t: Tree[A]): Int = t match{
+        case Leaf(_) => 1
+        case Branch(l,r) => 1 + size(l) + size(r)
+    }
+   
+   // Exercise 3.26 
+   def max(t: Tree[Int]): Int = t match {
+       case Leaf(x) => x
+       case Branch(Leaf(y), Leaf(x)) => x max y
+       case Branch(l, r) => max(l) max max(r)
+    }  
 
-	//Exercise 3.26 
-	// Write a function maximum that returns the maximum element in a Tree[Int].
-	// Note, in scala, you can use x.max(y) or x max y to compute the maximum of two 
-	// integers x and y
+    // Exercise 3.27
+    def maxLength[A](t: Tree[A]): Int = t match {
+        case Leaf(x) => 1
+        case Branch(l, r) => 1 + maxLength(l) max maxLength(r)
+    }
+   
+   // Exercise 3.28 
+    def map[A](t: Tree[A], f: A => A): Tree[A] = t match {
+        case Leaf(x) => Leaf(f(x))
+        case Branch(l, r) => Branch(map(l, f), map(r, f))
+    } 
 
-	//Exercise 3.27
-	//Write a function depth that returns the maximum path length from the root of a tree to any leaf
+    // Exercise 3.29
+    def fold[A,B](t: Tree[A])(f:A => B)(g: (B, B) => B): B = t match {
+        case Leaf(x) => f(x)
+        case Branch(l, r) => g(fold(l)(f)(g), fold(r)(f)(g))
+    }
 
-	//Exercise 3.28
-	//Write a function map, analogous to the method of the same name on List that modifies each element in a tree with a given function
-
-	//Exercise 3.29
-	//Generalize size, maximum, depth, and map, writing a new function fold that abstracts over their 
-	// similarities.  Reimplement them in terms of this more general function.  
-
-		
-
-
-
-}
+    def size2[A](t: Tree[A]): Int = {
+        fold(t)(x => 1)((x, y) => 1 + x + y)
+    }
+} 
