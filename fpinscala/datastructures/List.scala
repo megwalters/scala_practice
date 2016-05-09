@@ -184,6 +184,26 @@ object List {
             case (Cons(x, _), Nil) => Nil
             case (Nil, Cons(x, _)) => Nil
         }
+        
+        // Exercise 3.24 
+        def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+            def headMatch[A](sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+                case (Nil, Nil) => true
+                case (Nil, y) => false
+                case (x, Nil) => true
+                case (Cons(x, xs), Cons(y, ys)) => {if (x == y) headMatch(xs, ys)
+                                                else false}
+            }
+            
+            (sup, sub) match {
+                case (Nil, Nil) => true
+                case(Nil, y) => false
+                case(x, Nil) => true
+                case(Cons(x, xs), Cons(y, ys)) => 
+                    headMatch(Cons(x,xs), Cons(y, ys)) | hasSubsequence(Cons(x, xs), ys)
+            }
+             
+        }
 
 	//Exercise 3.24 TODO
 	//def hasSubsequence[A](sub: List[A], sub: List[A]): Boolean
