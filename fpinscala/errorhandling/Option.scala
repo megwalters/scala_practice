@@ -28,6 +28,8 @@ sealed trait Option[+A]{
 	}
 
 
+
+
 }
 
 case class Some[+A](get: A) extends Option[A]
@@ -40,9 +42,24 @@ object Option{
 	}
 
 	//TODO This still doesn't work
-	def variance(xs: Seq[Double]): Option[Double] = {
-		mean(xs).flatMap((xs: Seq[Double]) => mean(xs.map((x: Double) => math.pow(x - mean(xs), 2))))
+	//def variance(xs: Seq[Double]): Option[Double] = {
+	//	xs.flatMap((xs: Seq[Double]) => mean(xs.map((x: Double) => math.pow(x - mean(xs), 2))))
+	//}
+
+
+	def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = (a,b) match{
+		case (None, None) => None
+		case (None, Some(b)) => None
+		case (Some(a), None) => None
+		case (Some(a), Some(b)) => Some(f(a, b))
 	}
+
+	//def sequence[A](a: List[Option[A]]): Option[List[A]] = a match {
+	//	case Nil => None
+	//	case None::at => None
+	//	case at::None => None 
+	//	case _::at => sequence(at.getOrElse(None))
+	//}		
 
 }
 
