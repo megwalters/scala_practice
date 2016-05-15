@@ -3,6 +3,8 @@ package fpinscala.errorhandling
 import scala.{Option => _, Some => _, Either => _, _}
 
 sealed trait Option[+A]{
+
+	//Exercise 4.1
 	def map[B](f: A => B): Option[B] = this match{
 		case None => None
 		case Some(a) => Some(f(a))
@@ -41,12 +43,12 @@ object Option{
 		else Some(xs.sum / xs.length)
 	}
 
-	//TODO This still doesn't work
-	//def variance(xs: Seq[Double]): Option[Double] = {
-	//	xs.flatMap((xs: Seq[Double]) => mean(xs.map((x: Double) => math.pow(x - mean(xs), 2))))
-	//}
+	// Exercise 4.2
+	def variance(xs: Seq[Double]): Option[Double] = {
+		mean(xs).flatMap(m => mean(xs.map(x => math.pow(x-m, 2))))
+	}
 
-
+	//Exercise 4.3 
 	def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = (a,b) match{
 		case (None, None) => None
 		case (None, Some(b)) => None
