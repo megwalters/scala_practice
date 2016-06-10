@@ -133,3 +133,13 @@ object RNG {
     
 }
 
+case class State[S, +A](run: S => (A, S)){
+
+}
+
+
+object State{
+    type Rand[A] = State[RNG, A]
+}
+
+
