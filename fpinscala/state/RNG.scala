@@ -160,9 +160,25 @@ case class State[S, +A](run: S => (A, S)){
 object State{
     type Rand[A] = State[RNG, A]
 
-    def sequence[S, A](fs: List[State[S, A]]): State[S, List[A]] = State(s => {
-        fs.foldRight(s.unit[List[A]]List())((f, acc) => f.map2(acc)(_::_))
-    })
+    // More Exercise 6.10
+
+    def unit[S, A](a: A): State[S, A] = {
+        State(s => (a, s))
+    }
+
+    def sequence[S, A](fs: List[State[S, A]]): State[S, List[A]] = {
+        fs.foldRight(unit[S,List[A]](List()))((f, acc) => f.map2(acc)(_::_))
+    }
+
+    def modify[S](f: S => S): State[S, Unit] = for {
+        s <- get
+        _ <- set(f(s))
+    } yield ()
+
+    def get[S]: State[S, S] = State(s => (s,s))
+
+    def set[S](s: S): State[S, Unit] = State(_ => ((), s))
+
 }
 
 
