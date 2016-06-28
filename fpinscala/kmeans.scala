@@ -49,15 +49,15 @@ object KMeansAlgorithm {
     	List.tabulate(pm(0).length, pm.length)((i,j) => pm(j)(i))
     }
 
-    //Broken right now!
     def findMeanofCluster(pm: PointMatrix): Point = {
 	val numPoints = pm.length
 	val lengthPoints = pm(0).length
 
 	// Initialize an empty list
-        var accList = List()
-	for (col <- transpose(pm)) yield
-		accList = accList :+ meanOfElements(col)
-	accList
+        var accList = List[Double]()
+	for (row <- transpose(pm)) yield
+            accList.++=(List(meanOfElements(row)))
+        accList
     }
+
 }
