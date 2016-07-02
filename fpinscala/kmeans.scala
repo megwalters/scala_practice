@@ -13,10 +13,10 @@ object KMeansAlgorithm {
 	case (h1::t1, h2::t2) => (h1 - h2)::subtractElements(t1, t2)
     }
 
-    def computeDistanceSquared(p1: Point, p2: Point): Double = {
+    def computeDistance(p1: Point, p2: Point): Double = {
         val differences = subtractElements(p1, p2)
 	val differencesSquared = differences.map(x => x*x)
-	sumOfElements(differencesSquared)
+	math.sqrt(sumOfElements(differencesSquared))
     }
 
     def sumOfElements(p1: Point): Double = p1 match {
@@ -26,14 +26,14 @@ object KMeansAlgorithm {
 
     def findClosestCentroid(p: Point, cm: PointMatrix): Point = {
     	def CurrMin(p1: Point, p2: Point, min: Double): Boolean = {
-	    val distance = computeDistanceSquared(p1, p2)
+	    val distance = computeDistance(p1, p2)
 	    if (distance < min) true
 	    else false
 	}
 	
 	var curMin = (p, Double.MaxValue)
 	for (row <- cm) yield
-		if (CurrMin(p, row, curMin._2)) curMin = (row, computeDistanceSquared(p, row))
+		if (CurrMin(p, row, curMin._2)) curMin = (row, computeDistance(p, row))
 	
 	curMin._1
 	
@@ -59,5 +59,15 @@ object KMeansAlgorithm {
             accList.++=(List(meanOfElements(row)))
         accList
     }
+
+    def computeCost(pm: PointMatrix, cm: PointMatrix): Double = {
+    // pm contains all of the points, each row is a point 
+    // cm contains the centroids which each point maps to
+    // if the point in row 1 maps to Point c, the row 1 of cm is c
+        var acc_cost = 0.0
+
+    }
+
+
 
 }
