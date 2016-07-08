@@ -2,6 +2,8 @@
 * An implementation of k-means using Scala and functional programming style
 */
 
+import util.Random.nextInt
+
 object KMeansAlgorithm {
     
     type Point = List[Double]
@@ -65,8 +67,30 @@ object KMeansAlgorithm {
     // cm contains the centroids which each point maps to
     // if the point in row 1 maps to Point c, the row 1 of cm is c
         var acc_cost = 0.0
+        for (i <- 0 to pm.length - 1) 
+            acc_cost = acc_cost + computeDistance(pm(i), cm(i))
+        acc_cost
 
     }
+
+    def generateListRands(k: Int, max: Int): List[Int] = {
+        // Generates a list of k unique random integers between 0 and max (inclusive)
+        val rnd = new scala.util.Random(1000)
+        var list = List[Int]()
+        def go(cur_list: List[Int]): List[Int] = {
+            var x = rnd.nextInt(max + 1)
+            var temp = List[Int]()
+            if (cur_list.contains(x)) go(cur_list) else temp = x :: cur_list 
+            temp
+        }
+     
+        while (list.length != k) list = go(list)
+        list
+    }
+
+    //def runKMeans(data: PointMatrix, maxIters: Int = 1000, threshold: Double = .001, clusters: Int = 10)): (List[Double], PointMatrix) = {
+        // Choose k random columns from data to use as initial centroids
+         
 
 
 
