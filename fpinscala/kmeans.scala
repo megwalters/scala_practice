@@ -36,7 +36,6 @@ object KMeansAlgorithm {
 	var curMin = (p, Double.MaxValue)
 	for (row <- cm) yield
 		if (CurrMin(p, row, curMin._2)) curMin = (row, computeDistance(p, row))
-	
 	curMin._1
 	
     }
@@ -54,7 +53,6 @@ object KMeansAlgorithm {
     def findMeanofCluster(pm: PointMatrix): Point = {
 	val numPoints = pm.length
 	val lengthPoints = pm(0).length
-
 	// Initialize an empty list
         var accList = List[Double]()
 	for (row <- transpose(pm)) yield
@@ -88,10 +86,40 @@ object KMeansAlgorithm {
         list
     }
 
-    //def runKMeans(data: PointMatrix, maxIters: Int = 1000, threshold: Double = .001, clusters: Int = 10)): (List[Double], PointMatrix) = {
-        // Choose k random columns from data to use as initial centroids
-         
+    def matchPointsToClusters(data: PointMatrix, clusters: PointMatrix): PointMatrix = {
+        var matched_clusters = List[List[Double]]()
+        for (row <- data) {
+            var cur_centroid = findClosestCentroid(row, clusters)
+            matched_clusters = cur_centroid :: matched_clusters
+        }
+        matched_clusters
+    }
 
+    def updateClusters(data: PointMatrix, matched_clusters: PointMatrix)(f: PointMatrix => Point): PointMatrix = {
+        val data_zipped = data.zip(matched_clusters)
+        val group_map = data_zipped.groupBy(_._2)
+        val new_clusters = group_map.map(x => f(x._2.map(_._1))).toList
+    }  
 
+    def runKMeans(data: PointMatrix, maxIters: Int = 1000, clusters: Int = 10): List[Int] = {
+        // Initiate cluster centroids
+        val initial_centroid_indices = generateListRands(clusters, data.length)
+        val initial_centroids = initial_centroid_indices.map(data)
+        val initial_classification = matchPointsToClusters(data, initial_centroids)
+        val initial_cost = computeCost(data, initial_centroids)
 
+        // Main loop
+        def go(data: PointMatrix, centroids: PointMatrix, iter: Int, prev_cost: Double): List[Int]  = {
+            var new_centroids = updateClusters(data, centroids)(findMeanofCluster)
+            var new_cost = computeCost(data, new_centroids)
+            if (new_cost - prev_cost != 0) {
+                if (iter < maxIters) {
+                    go(data, new_centroids, iter + 1, new_cost)
+                }
+            }
+            val final_indices = new_centroids.zipWithIndex.map(_._2)
+            final_indices
+        }
+        go(data, initial_centroids, 1, initial_cost)
+    }
 }
