@@ -34,17 +34,12 @@ object LinearAlgebra {
 object KMeansAlgorithm {    
 
     def findClosestCentroid(p: Point, cm: PointMatrix): Point = {
-    	def CurrMin(p1: Point, p2: Point, min: Double): Boolean = {
-	    val distance = LinearAlgebra.computeDistance(p1, p2)
-	    if (distance < min) true
-	    else false
-	}
-	
-	var curMin = (p, Double.MaxValue)
-	for (row <- cm) yield
-		if (CurrMin(p, row, curMin._2)) curMin = (row, LinearAlgebra.computeDistance(p, row))
-	curMin._1
-	
+    	var distances = Seq[Double]()
+        for (row <- cm) {
+            distances = distances :+ LinearAlgebra.computeDistance(p, row)
+        }
+        val min_index = distances.indexOf(distances.min)
+        cm(min_index)
     }
 
     def findMeanofCluster(pm: PointMatrix): Point = {
