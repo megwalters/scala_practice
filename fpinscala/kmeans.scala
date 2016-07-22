@@ -4,11 +4,11 @@
 
 import util.Random.nextInt
 
-object KMeansAlgorithm {
-    
-    type Point = List[Double]
-    type PointMatrix = List[List[Double]]
-    
+type Point = List[Double]
+type PointMatrix = List[List[Double]]
+
+object LinearAlgebra {
+
     def subtractElements(p1: Point, p2: Point): Point = (p1, p2) match {
     	case (_, Nil) => Nil
 	case (Nil, _) => Nil
@@ -26,20 +26,6 @@ object KMeansAlgorithm {
 	case h1::t1 => h1 + sumOfElements(t1)
     }
 
-    def findClosestCentroid(p: Point, cm: PointMatrix): Point = {
-    	def CurrMin(p1: Point, p2: Point, min: Double): Boolean = {
-	    val distance = computeDistance(p1, p2)
-	    if (distance < min) true
-	    else false
-	}
-	
-	var curMin = (p, Double.MaxValue)
-	for (row <- cm) yield
-		if (CurrMin(p, row, curMin._2)) curMin = (row, computeDistance(p, row))
-	curMin._1
-	
-    }
-
     def meanOfElements(p1: Point): Double = {
     	val sum = sumOfElements(p1)
 	val numElements = p1.length
@@ -49,14 +35,31 @@ object KMeansAlgorithm {
     def transpose(pm: PointMatrix): PointMatrix = {
     	List.tabulate(pm(0).length, pm.length)((i,j) => pm(j)(i))
     }
+}
+
+object KMeansAlgorithm {    
+
+    def findClosestCentroid(p: Point, cm: PointMatrix): Point = {
+    	def CurrMin(p1: Point, p2: Point, min: Double): Boolean = {
+	    val distance = LinearAlgebra.computeDistance(p1, p2)
+	    if (distance < min) true
+	    else false
+	}
+	
+	var curMin = (p, Double.MaxValue)
+	for (row <- cm) yield
+		if (CurrMin(p, row, curMin._2)) curMin = (row, LinearAlgebra.computeDistance(p, row))
+	curMin._1
+	
+    }
 
     def findMeanofCluster(pm: PointMatrix): Point = {
 	val numPoints = pm.length
 	val lengthPoints = pm(0).length
 	// Initialize an empty list
         var accList = List[Double]()
-	for (row <- transpose(pm)) yield
-            accList.++=(List(meanOfElements(row)))
+	for (row <- LinearAlgebra.transpose(pm)) yield
+            accList.++=(List(LinearAlgebra.meanOfElements(row)))
         accList
     }
 
@@ -66,7 +69,7 @@ object KMeansAlgorithm {
     // if the point in row 1 maps to Point c, the row 1 of cm is c
         var acc_cost = 0.0
         for (i <- 0 to pm.length - 1) 
-            acc_cost = acc_cost + computeDistance(pm(i), cm(i))
+            acc_cost = acc_cost + LinearAlgebra.computeDistance(pm(i), cm(i))
         acc_cost
 
     }
@@ -99,27 +102,29 @@ object KMeansAlgorithm {
         val data_zipped = data.zip(matched_clusters)
         val group_map = data_zipped.groupBy(_._2)
         val new_clusters = group_map.map(x => f(x._2.map(_._1))).toList
+        new_clusters
     }  
 
-    def runKMeans(data: PointMatrix, maxIters: Int = 1000, clusters: Int = 10): List[Int] = {
+    def runKMeans(data: PointMatrix, maxIters: Int, clusters: Int): List[List[Double]] = {
         // Initiate cluster centroids
         val initial_centroid_indices = generateListRands(clusters, data.length)
         val initial_centroids = initial_centroid_indices.map(data)
         val initial_classification = matchPointsToClusters(data, initial_centroids)
-        val initial_cost = computeCost(data, initial_centroids)
+        val initial_cost = computeCost(data, initial_classification)
 
         // Main loop
-        def go(data: PointMatrix, centroids: PointMatrix, iter: Int, prev_cost: Double): List[Int]  = {
+        def go(data: PointMatrix, centroids: PointMatrix, iter: Int, prev_cost: Double): List[List[Double]]  = {
             var new_centroids = updateClusters(data, centroids)(findMeanofCluster)
-            var new_cost = computeCost(data, new_centroids)
+            var new_classification = matchPointsToClusters(data, new_centroids)
+            var new_cost = computeCost(data, new_classification)
             if (new_cost - prev_cost != 0) {
                 if (iter < maxIters) {
-                    go(data, new_centroids, iter + 1, new_cost)
+                    go(data, new_classification, iter + 1, new_cost)
                 }
             }
-            val final_indices = new_centroids.zipWithIndex.map(_._2)
+            val final_indices = new_classification
             final_indices
         }
-        go(data, initial_centroids, 1, initial_cost)
+        go(data, initial_classification, 1, initial_cost)
     }
 }
